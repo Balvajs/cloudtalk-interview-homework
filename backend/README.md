@@ -18,7 +18,7 @@ This folder serves as the scaffold of the application that is a part of the inte
    4. Shipments (optional)
 
 2. Please at the development consider
-   1. Development best practises
+   1. Development best practices
    2. Testing
    3. Simulate a situation in which you work with the team (pay attention to how you work with Git)
 

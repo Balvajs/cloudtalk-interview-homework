@@ -6,12 +6,20 @@
     "node": "24.5.0"
   },
   "scripts": {
-    "start": "node ./bin/www"
+    "start": "node src/main.ts",
+    "dev": "node --watch src/main.ts"
   },
+  "type": "module",
   "dependencies": {
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
     "express": "~4.16.1",
     "morgan": "~1.9.1"
+  },
+  "devDependencies": {
+    "@types/cookie-parser": "1.4.9",
+    "@types/debug": "4.1.12",
+    "@types/express": "5.0.3",
+    "@types/morgan": "1.9.10"
   }
 }
