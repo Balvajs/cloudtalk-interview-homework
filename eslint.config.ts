@@ -23,6 +23,7 @@ export default tseslint.config(
       '@stylistic/semi': 'off',
       '@stylistic/member-delimiter-style': 'off',
       '@stylistic/arrow-parens': 'off',
+      '@stylistic/operator-linebreak': 'off',
 
       // adjust abbreviations config to reflect industry standards
       'unicorn/prevent-abbreviations': [
