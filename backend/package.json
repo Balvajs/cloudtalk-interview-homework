@@ -8,11 +8,12 @@
   "scripts": {
     "start": "node --env-file-if-exists=.env src/main.ts",
     "dev": "node --env-file-if-exists=.env --watch src/main.ts",
-    "db:start": "docker run --name warehouse -e POSTGRES_PASSWORD=postgres -d -p 5432:5432 postgres",
+    "test": "vitest",
+    "db:start": "docker run --name warehouse -e POSTGRES_PASSWORD=postgres -d -p 5432:5432 postgres:17.6",
     "db:update": "drizzle-kit push",
     "db:generate-migrations": "drizzle-kit generate",
     "db:apply-migrations": "drizzle-kit migrate",
-    "db:seed": "node --env-file-if-exists=.env src/db/seed.ts",
+    "db:seed": "node --env-file-if-exists=.env src/db/seed-local.ts",
     "db:browser": "drizzle-kit studio"
   },
   "type": "module",
@@ -28,11 +29,16 @@
     "zod": "4.1.1"
   },
   "devDependencies": {
+    "@testcontainers/postgresql": "^11.5.1",
     "@types/cookie-parser": "1.4.9",
     "@types/debug": "4.1.12",
     "@types/express": "5.0.3",
     "@types/morgan": "1.9.10",
     "@types/pg": "8.15.5",
-    "drizzle-kit": "0.31.4"
+    "@types/supertest": "6.0.3",
+    "@vitest/ui": "3.2.4",
+    "drizzle-kit": "0.31.4",
+    "supertest": "7.1.4",
+    "vitest": "3.2.4"
   }
 }

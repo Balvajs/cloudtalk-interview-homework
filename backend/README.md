@@ -27,3 +27,44 @@ This folder serves as the scaffold of the application that is a part of the inte
 We wish you good luck and a clear mind! We are looking forward to seeing you!
 
 PS: We should be able to run application locally, thus start the backend and be able to use endpoints through the curl/postman.
+
+## Setup & Running
+
+### Prerequisites
+
+- Node.js 24.5.0 (see .nvmrc)
+- PostgreSQL database
+- Docker (optional, for database setup)
+
+### Environment Setup
+
+1. Copy `.env.example` to `.env`
+2. Set your `DATABASE_URL` in `.env` file
+
+### Database Setup
+
+```bash
+# Start PostgreSQL with Docker
+npm run db:start
+
+# Push schema to database
+npm run db:update
+
+# Optional: Seed database with sample data
+npm run db:seed
+```
+
+### Running the Application
+
+```bash
+# Install dependencies
+npm install
+
+# Development mode (with file watching)
+npm run dev
+
+# Production mode
+npm start
+```
+
+The API will be available at `http://localhost:3000`

@@ -1,13 +1,18 @@
+import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import { seed } from 'drizzle-seed';
 
-import { database } from './database.ts';
-import { databaseSchema } from './schema.ts';
+import * as databaseSchema from './schema.ts';
 
-await seed(database, databaseSchema).refine((funcs) => ({
-  products: {
-    columns: {
-      quantity: funcs.int({ minValue: 0 }),
-      price: funcs.number({ minValue: 0, precision: 2 }),
+export const seedDatabase = ({
+  database,
+}: {
+  database: NodePgDatabase<typeof databaseSchema>;
+}) =>
+  seed(database, databaseSchema).refine((funcs) => ({
+    products: {
+      columns: {
+        quantity: funcs.int({ minValue: 0 }),
+        price: funcs.number({ minValue: 0, precision: 2 }),
+      },
     },
-  },
-}));
+  }));
