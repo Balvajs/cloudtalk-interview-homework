@@ -1,6 +1,7 @@
 import { sql } from 'drizzle-orm';
 import {
   check,
+  doublePrecision,
   integer,
   pgTable,
   timestamp,
@@ -14,7 +15,7 @@ export const products = pgTable(
     id: uuid().primaryKey().defaultRandom(),
     name: varchar({ length: 255 }).notNull(),
     quantity: integer().notNull(),
-    price: integer().notNull(),
+    price: doublePrecision().notNull(),
     createdAt: timestamp().notNull().defaultNow(),
     updatedAt: timestamp()
       .notNull()
