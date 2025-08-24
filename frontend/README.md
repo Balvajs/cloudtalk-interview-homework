@@ -5,29 +5,23 @@ This repository serves as the scaffold of the application that is a part of the 
 ## Assignment
 
 1. As a warehouse, we would like to have two main features
-
    1. Warehouse status
-
       1. Table of products that are available
       2. Product definition (required properties)
-
          1. ID
          2. Name
          3. Quantity
          4. Unit price (euros)
 
       3. Product manipulation
-
          1. CRUD operations
 
    2. Shipments (optional)
 
 2. The application should be prepared to use the REST API
-
    1. In case of Fullstack position, the API should be implemented
 
 3. Please at the development consider
-
    1. Best practices for the development of angular application
    2. Testing
    3. Simulate a situation in which you work with the team (pay attention to how you work with Git)
