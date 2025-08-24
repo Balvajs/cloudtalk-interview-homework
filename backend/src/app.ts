@@ -4,8 +4,8 @@ import cookieParser from 'cookie-parser';
 import express, { json, static as static_, urlencoded } from 'express';
 import logger from 'morgan';
 
-import indexRouter from './routes/index.ts';
-import usersRouter from './routes/users.ts';
+import { zodErrorHandler } from './middlewares/zod-error-handler.ts';
+import { productsRouter } from './routes/products.ts';
 
 const app = express();
 
@@ -15,7 +15,8 @@ app.use(urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(static_(path.join(import.meta.dirname, '../public')));
 
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
+app.use('/products', productsRouter);
+
+app.use(zodErrorHandler);
 
 export default app;
