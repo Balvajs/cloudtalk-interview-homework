@@ -1,9 +1,11 @@
-import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ListItemComponent } from './list-item/list-item.component';
-import { Observable, of } from 'rxjs';
+import { Component } from '@angular/core';
+import { Observable } from 'rxjs';
+
 import { WarehouseItem } from '../../core/models/warehouseItem';
+
 import { ItemsMockService } from './items.mock.service';
+import { ListItemComponent } from './list-item/list-item.component';
 
 @Component({
   selector: 'app-items-list',

@@ -1,5 +1,8 @@
+/* eslint-disable unicorn/prevent-abbreviations */
 // Karma configuration file, see link for more information
 // https://karma-runner.github.io/1.0/config/configuration-file.html
+
+const path = require('node:path');
 
 module.exports = function (config) {
   config.set({
@@ -25,7 +28,7 @@ module.exports = function (config) {
       suppressAll: true, // removes the duplicated traces
     },
     coverageReporter: {
-      dir: require('path').join(__dirname, './coverage/warehouse'),
+      dir: path.join(__dirname, './coverage/warehouse'),
       subdir: '.',
       reporters: [{ type: 'html' }, { type: 'text-summary' }],
     },

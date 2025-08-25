@@ -1,5 +1,6 @@
 import eslint from '@eslint/js';
 import stylistic from '@stylistic/eslint-plugin';
+import { configs as angularConfigs } from 'angular-eslint';
 import { flatConfigs as importPlugin } from 'eslint-plugin-import-x';
 import nodePlugin from 'eslint-plugin-n';
 import simpleImportSort from 'eslint-plugin-simple-import-sort';
@@ -10,12 +11,16 @@ export default tseslint.config(
   /**
    * Common plugin and rules
    */
-  eslint.configs.recommended,
-  tseslint.configs.strict,
-  tseslint.configs.stylistic,
-  stylistic.configs.recommended,
-  unicorn.configs.recommended,
   {
+    files: ['**/*.ts', '**/*.js'],
+    extends: [
+      eslint.configs.recommended,
+      stylistic.configs.recommended,
+      unicorn.configs.recommended,
+    ],
+    plugins: {
+      'simple-import-sort': simpleImportSort,
+    },
     rules: {
       /**
        * Stylistic rules colliding with Prettier
@@ -37,13 +42,7 @@ export default tseslint.config(
           },
         },
       ],
-    },
-  },
-  {
-    plugins: {
-      'simple-import-sort': simpleImportSort,
-    },
-    rules: {
+
       'simple-import-sort/imports': [
         'error',
         {
@@ -69,15 +68,21 @@ export default tseslint.config(
       'simple-import-sort/exports': 'error',
     },
   },
+  {
+    files: ['**/*.ts'],
+    extends: [tseslint.configs.strict, tseslint.configs.stylistic],
+  },
 
   /**
    * Backend specific plugins and rules
    */
-  { files: ['backend/**'], ...nodePlugin.configs['flat/recommended-module'] },
-  { files: ['backend/**'], ...importPlugin.recommended },
-  { files: ['backend/**'], ...importPlugin.typescript },
   {
     files: ['backend/**'],
+    extends: [
+      nodePlugin.configs['flat/recommended-module'],
+      importPlugin.recommended,
+      importPlugin.typescript,
+    ],
     rules: {
       // handled by unicorn/no-process-exit
       'n/no-process-exit': 'off',
@@ -99,5 +104,17 @@ export default tseslint.config(
       'import-x/newline-after-import': 'error',
       'import-x/consistent-type-specifier-style': ['error', 'prefer-top-level'],
     },
+  },
+
+  /**
+   * Frontend specific plugins and rules
+   */
+  {
+    files: ['frontend/**/*.html'],
+    extends: [angularConfigs.templateRecommended],
+  },
+  {
+    files: ['frontend/**/*.ts'],
+    extends: [angularConfigs.tsRecommended],
   },
 );

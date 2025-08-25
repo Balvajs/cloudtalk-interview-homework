@@ -1,12 +1,13 @@
 <div class="list-item">
   <div class="list-item--image">
-    <img [src]="item.imageUrl" alt="warehouse-item-image" />
+    <img src="assets/logo_black.svg" alt="warehouse-item-image" />
   </div>
   <div class="list-item--content">
     <span
       ><b>{{ item.name }}</b></span
     >
-    <span>{{ item.description }}</span>
+    <!-- <span>{{ item.description }}</span> -->
+    <span>Lorem ipsum dolor sit amet</span>
   </div>
   <span>{{ item.quantity }}x</span>
   <span>{{ item.unitPrice | currency: 'EUR' }}</span>
