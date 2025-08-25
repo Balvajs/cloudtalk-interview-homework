@@ -9,7 +9,6 @@ import { ListItemComponent } from './list-item/list-item.component';
 
 @Component({
   selector: 'app-items-list',
-  standalone: true,
   imports: [CommonModule, ListItemComponent],
   templateUrl: './items-list.component.html',
   styleUrls: ['./items-list.component.scss'],
