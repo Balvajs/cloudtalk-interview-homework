@@ -5,10 +5,12 @@ import * as databaseSchema from './schema.ts';
 
 export const seedDatabase = ({
   database,
+  count = 50,
 }: {
   database: NodePgDatabase<typeof databaseSchema>;
+  count?: number;
 }) =>
-  seed(database, databaseSchema).refine((funcs) => ({
+  seed(database, databaseSchema, { count }).refine((funcs) => ({
     products: {
       columns: {
         quantity: funcs.int({ minValue: 0 }),

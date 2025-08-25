@@ -52,6 +52,9 @@ npm run db:update
 
 # Optional: Seed database with sample data
 npm run db:seed
+
+# Optional: Seed database with custom rows count
+npm run db:seed --count=1000
 ```
 
 ### Running the Application
