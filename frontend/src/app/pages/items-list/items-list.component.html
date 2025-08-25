@@ -1,8 +1,6 @@
 <div class="items-list">
-  <app-list-item
-    *ngFor="let item of items$ | async"
-    [item]="item"
-    (addToShipment)="addItemToShipment(item.id)"
-  >
-  </app-list-item>
+  @for (item of items$ | async; track item) {
+    <app-list-item [item]="item" (addToShipment)="addItemToShipment(item.id)">
+    </app-list-item>
+  }
 </div>
