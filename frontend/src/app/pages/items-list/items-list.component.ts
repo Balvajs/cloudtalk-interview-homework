@@ -1,11 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 
-import { WarehouseItem } from '../../core/models/warehouseItem';
+import { Product } from '../../core/models/products';
 
-import { ItemsMockService } from './items.mock.service';
 import { ListItemComponent } from './list-item/list-item.component';
+import { ProductsService } from './products.service';
 
 @Component({
   selector: 'app-items-list',
@@ -14,11 +14,7 @@ import { ListItemComponent } from './list-item/list-item.component';
   styleUrls: ['./items-list.component.scss'],
 })
 export class ItemsListComponent {
-  items$: Observable<WarehouseItem[]> = this.itemsMockService.items;
+  private productsService = inject(ProductsService);
 
-  constructor(private itemsMockService: ItemsMockService) {}
-
-  addItemToShipment(id: number): void {
-    this.itemsMockService.addToShipment(id);
-  }
+  items$: Observable<Product[]> = this.productsService.getProducts();
 }

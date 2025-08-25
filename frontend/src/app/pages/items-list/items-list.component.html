@@ -1,6 +1,13 @@
 <div class="items-list">
-  @for (item of items$ | async; track item) {
-    <app-list-item [item]="item" (addToShipment)="addItemToShipment(item.id)">
-    </app-list-item>
+  @if (items$ | async; as items) {
+    @if (items.length > 0) {
+      @for (item of items; track item.id) {
+        <app-list-item [item]="item"></app-list-item>
+      }
+    } @else {
+      <div class="no-items">No products available</div>
+    }
+  } @else {
+    <div class="loading">Loading products...</div>
   }
 </div>

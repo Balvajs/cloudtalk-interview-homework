@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { WarehouseItem } from '../../../core/models/warehouseItem';
+import { Product } from '../../../core/models/products';
 
 import { ListItemComponent } from './list-item.component';
 
@@ -8,11 +8,11 @@ describe('ListItemComponent', () => {
   let component: ListItemComponent;
   let fixture: ComponentFixture<ListItemComponent>;
 
-  const mockItem: WarehouseItem = {
+  const mockItem: Product = {
     id: 1,
     name: 'Test Item',
     quantity: 10,
-    unitPrice: 29.99,
+    price: 29.99,
   };
 
   beforeEach(async () => {

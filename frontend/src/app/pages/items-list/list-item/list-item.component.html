@@ -10,8 +10,6 @@
     <span>Lorem ipsum dolor sit amet</span>
   </div>
   <span>{{ item.quantity }}x</span>
-  <span>{{ item.unitPrice | currency: 'EUR' }}</span>
-  <button class="list-item--button" (click)="addToShipment.emit()">
-    Add to Shipment
-  </button>
+  <span>{{ item.price | currency: 'EUR' }}</span>
+  <button class="list-item--button">Delete</button>
 </div>

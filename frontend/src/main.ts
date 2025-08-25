@@ -1,3 +1,4 @@
+import { provideHttpClient } from '@angular/common/http';
 import { enableProdMode } from '@angular/core';
 import { bootstrapApplication } from '@angular/platform-browser';
 
@@ -8,4 +9,6 @@ if (environment.production) {
   enableProdMode();
 }
 
-bootstrapApplication(AppComponent).catch((error) => console.error(error));
+bootstrapApplication(AppComponent, { providers: [provideHttpClient()] }).catch(
+  (error) => console.error(error),
+);
