@@ -53,8 +53,9 @@ describe('ItemsListComponent', () => {
     httpMock = TestBed.inject(HttpTestingController);
     productsService = TestBed.inject(ProductsService);
 
-    // Prevent automatic HTTP calls in most tests
-    spyOn(component, 'loadInitialData');
+    // Prevent automatic HTTP calls in most tests by spying on loadMore
+
+    spyOn(component, 'loadMore');
   });
 
   afterEach(() => {
@@ -65,16 +66,38 @@ describe('ItemsListComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  it('should setup intersection observer after view init', () => {
+    const setupSpy = spyOn(component, 'setupIntersectionObserver');
+
+    component.ngAfterViewInit();
+
+    expect(setupSpy).toHaveBeenCalled();
+  });
+
+  it('should disconnect intersection observer on destroy', () => {
+    const mockObserver = {
+      disconnect: jasmine.createSpy('disconnect'),
+      observe: jasmine.createSpy('observe'),
+    } as unknown as IntersectionObserver;
+
+    component.intersectionObserver = mockObserver;
+
+    component.ngOnDestroy();
+
+    expect(mockObserver.disconnect).toHaveBeenCalled();
+  });
+
   it('should load initial data on init', () => {
     // The spy is already set up in beforeEach
     component.ngOnInit();
 
-    expect(component.loadInitialData).toHaveBeenCalled();
+    expect(component.loadMore).toHaveBeenCalled();
   });
 
   it('should load and display initial products', async () => {
     // Restore the original method for this test
-    (component.loadInitialData as jasmine.Spy).and.callThrough();
+
+    (component.loadMore as jasmine.Spy).and.callThrough();
 
     fixture.detectChanges(); // This triggers ngOnInit
 
@@ -96,9 +119,10 @@ describe('ItemsListComponent', () => {
     expect(listItems.length).toBe(2);
   });
 
-  it('should load more products on scroll down', async () => {
+  it('should load more products when intersection is triggered', async () => {
     // Restore the original method for this test
-    (component.loadInitialData as jasmine.Spy).and.callThrough();
+
+    (component.loadMore as jasmine.Spy).and.callThrough();
 
     // Initial load
     fixture.detectChanges();
@@ -110,8 +134,8 @@ describe('ItemsListComponent', () => {
     await fixture.whenStable();
     fixture.detectChanges();
 
-    // Trigger scroll down
-    component.onScrollDown();
+    // Trigger intersection (load more)
+    component.onIntersection();
 
     const scrollRequest = httpMock.expectOne(
       `${environment.apiUrl}/products?order=desc&limit=20&cursor=1234567890,product-id-2`,
@@ -136,7 +160,7 @@ describe('ItemsListComponent', () => {
 
     spyOn(productsService, 'getProducts');
 
-    component.onScrollDown();
+    component.onIntersection();
 
     expect(productsService.getProducts).not.toHaveBeenCalled();
   });
@@ -147,7 +171,7 @@ describe('ItemsListComponent', () => {
 
     spyOn(productsService, 'getProducts');
 
-    component.onScrollDown();
+    component.onIntersection();
 
     expect(productsService.getProducts).not.toHaveBeenCalled();
   });
@@ -166,7 +190,8 @@ describe('ItemsListComponent', () => {
 
   it('should show no items message when no products available', async () => {
     // Restore the original method for this test
-    (component.loadInitialData as jasmine.Spy).and.callThrough();
+
+    (component.loadMore as jasmine.Spy).and.callThrough();
 
     fixture.detectChanges();
 
@@ -194,7 +219,8 @@ describe('ItemsListComponent', () => {
 
   it('should show end message when all products are loaded', async () => {
     // Restore the original method for this test
-    (component.loadInitialData as jasmine.Spy).and.callThrough();
+
+    (component.loadMore as jasmine.Spy).and.callThrough();
 
     // Initial load
     fixture.detectChanges();
@@ -207,7 +233,7 @@ describe('ItemsListComponent', () => {
     fixture.detectChanges();
 
     // Load second page (last page)
-    component.onScrollDown();
+    component.onIntersection();
     const scrollRequest = httpMock.expectOne(
       `${environment.apiUrl}/products?order=desc&limit=20&cursor=1234567890,product-id-2`,
     );
@@ -228,7 +254,8 @@ describe('ItemsListComponent', () => {
   it('should handle error when loading initial data', async () => {
     spyOn(console, 'error');
     // Restore the original method for this test
-    (component.loadInitialData as jasmine.Spy).and.callThrough();
+
+    (component.loadMore as jasmine.Spy).and.callThrough();
 
     fixture.detectChanges();
 
@@ -240,7 +267,7 @@ describe('ItemsListComponent', () => {
     await fixture.whenStable();
 
     expect(console.error).toHaveBeenCalledWith(
-      'Error loading products:',
+      'Error loading more products:',
       jasmine.any(Object),
     );
     expect(component.loading).toBe(false);
@@ -249,7 +276,8 @@ describe('ItemsListComponent', () => {
   it('should handle error when loading more data', async () => {
     spyOn(console, 'error');
     // Restore the original method for this test
-    (component.loadInitialData as jasmine.Spy).and.callThrough();
+
+    (component.loadMore as jasmine.Spy).and.callThrough();
 
     // Initial load
     fixture.detectChanges();
@@ -261,8 +289,8 @@ describe('ItemsListComponent', () => {
     await fixture.whenStable();
     fixture.detectChanges();
 
-    // Trigger scroll down with error
-    component.onScrollDown();
+    // Trigger intersection with error
+    component.onIntersection();
 
     const scrollRequest = httpMock.expectOne(
       `${environment.apiUrl}/products?order=desc&limit=20&cursor=1234567890,product-id-2`,
@@ -276,5 +304,55 @@ describe('ItemsListComponent', () => {
       jasmine.any(Object),
     );
     expect(component.loading).toBe(false);
+  });
+
+  it('should delete item and remove it from the list', async () => {
+    // Setup initial data without using private property
+    component.items = [...mockProductsResponse.data];
+    fixture.detectChanges();
+
+    const productId = 1;
+
+    component.onDeleteItem(productId);
+
+    const deleteRequest = httpMock.expectOne(
+      `${environment.apiUrl}/products/${productId}`,
+    );
+    expect(deleteRequest.request.method).toBe('DELETE');
+    deleteRequest.flush({});
+
+    await fixture.whenStable();
+
+    expect(component.items.length).toBe(1);
+    expect(
+      component.items.find((item) => item.id === productId),
+    ).toBeUndefined();
+    expect(component.items[0].id).toBe(2);
+  });
+
+  it('should handle error when deleting item', async () => {
+    spyOn(console, 'error');
+
+    // Setup initial data
+    component.items = [...mockProductsResponse.data];
+
+    const productId = 1;
+    const originalItemsLength = component.items.length;
+
+    component.onDeleteItem(productId);
+
+    const deleteRequest = httpMock.expectOne(
+      `${environment.apiUrl}/products/${productId}`,
+    );
+    deleteRequest.error(new ProgressEvent('Network error'));
+
+    await fixture.whenStable();
+
+    expect(console.error).toHaveBeenCalledWith(
+      'Error deleting product:',
+      jasmine.any(Object),
+    );
+    // Items should not be removed on error
+    expect(component.items.length).toBe(originalItemsLength);
   });
 });

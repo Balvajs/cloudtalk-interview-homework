@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 
 import { Product } from '../../../core/models/products';
 
@@ -28,5 +29,27 @@ describe('ListItemComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should emit deleteItem event when delete button is clicked', () => {
+    spyOn(component.deleteItem, 'emit');
+
+    const deleteButton = fixture.debugElement.query(
+      By.css('.list-item--button'),
+    );
+    deleteButton.nativeElement.click();
+
+    expect(component.deleteItem.emit).toHaveBeenCalledWith(mockItem.id);
+  });
+
+  it('should call onDelete when delete button is clicked', () => {
+    spyOn(component, 'onDelete');
+
+    const deleteButton = fixture.debugElement.query(
+      By.css('.list-item--button'),
+    );
+    deleteButton.nativeElement.click();
+
+    expect(component.onDelete).toHaveBeenCalled();
   });
 });

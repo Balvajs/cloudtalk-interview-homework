@@ -11,5 +11,5 @@
   </div>
   <span>{{ item.quantity }}x</span>
   <span>{{ item.price | currency: 'EUR' }}</span>
-  <button class="list-item--button">Delete</button>
+  <button class="list-item--button" (click)="onDelete()">Delete</button>
 </div>

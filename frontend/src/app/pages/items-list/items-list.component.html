@@ -1,15 +1,11 @@
-<div
-  class="items-list"
-  infiniteScroll
-  [infiniteScrollDistance]="2"
-  [infiniteScrollThrottle]="300"
-  [infiniteScrollDisabled]="loading || !hasNextPage"
-  (scrolled)="onScrollDown()"
->
+<div class="items-list">
   @if (items$ | async; as items) {
     @if (items.length > 0) {
       @for (item of items; track item.id) {
-        <app-list-item [item]="item"></app-list-item>
+        <app-list-item
+          [item]="item"
+          (deleteItem)="onDeleteItem($event)"
+        ></app-list-item>
       }
     } @else {
       <div class="no-items">No products available</div>
@@ -23,4 +19,7 @@
   @if (!hasNextPage && (items$ | async)?.length) {
     <div class="end-message">No more products to load</div>
   }
+
+  <!-- Intersection Observer target element -->
+  <div #listEnd class="list-end"></div>
 </div>

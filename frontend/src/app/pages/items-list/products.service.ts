@@ -22,4 +22,8 @@ export class ProductsService {
       params: parameters,
     });
   }
+
+  deleteProduct(id: number): Observable<unknown> {
+    return this.http.delete(`${environment.apiUrl}/products/${id}`);
+  }
 }

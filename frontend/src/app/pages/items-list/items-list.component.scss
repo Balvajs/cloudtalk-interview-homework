@@ -1,3 +1,11 @@
 :host {
   width: 100%;
 }
+
+.items-list {
+  .list-end {
+    height: 1px;
+    width: 100%;
+    pointer-events: none;
+  }
+}

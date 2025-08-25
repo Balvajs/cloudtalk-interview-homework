@@ -71,6 +71,10 @@ export default tseslint.config(
   {
     files: ['**/*.ts'],
     extends: [tseslint.configs.strict, tseslint.configs.stylistic],
+    rules: {
+      // collides with unicorn/no-useless-undefined
+      '@typescript-eslint/no-empty-function': 'off',
+    },
   },
 
   /**

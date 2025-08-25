@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 import { Product } from '../../../core/models/products';
 
@@ -11,4 +11,9 @@ import { Product } from '../../../core/models/products';
 })
 export class ListItemComponent {
   @Input({ required: true }) item!: Product;
+  @Output() deleteItem = new EventEmitter<number>();
+
+  onDelete(): void {
+    this.deleteItem.emit(this.item.id);
+  }
 }

@@ -69,9 +69,10 @@ productsRouter.get('/', async (req, res) => {
 /**
  * Get product by ID
  */
-const selectProductByIdSchema = createSelectSchema(
-  databaseSchema.products,
-).pick({
+const selectProductByIdSchema = createSelectSchema(databaseSchema.products, {
+  // the id must be more relaxed, ZOD's uuid is not compatible with Drizzle's uuid
+  id: z.guid(),
+}).pick({
   id: true,
 });
 productsRouter.get('/:id', async (req, res) => {

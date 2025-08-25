@@ -132,4 +132,20 @@ describe('ProductsService', () => {
     const result = await productsPromise;
     expect(result).toEqual(productsResponse);
   });
+
+  it('should delete a product', async () => {
+    const productId = 123;
+
+    const delete$ = service.deleteProduct(productId);
+    const deletePromise = firstValueFrom(delete$);
+
+    const req = httpMock.expectOne(
+      `${environment.apiUrl}/products/${productId}`,
+    );
+    expect(req.request.method).toBe('DELETE');
+    req.flush({});
+
+    const result = await deletePromise;
+    expect(result).toEqual({});
+  });
 });
