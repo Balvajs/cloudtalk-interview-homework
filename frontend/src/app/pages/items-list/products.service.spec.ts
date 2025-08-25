@@ -22,11 +22,19 @@ describe('ProductsService', () => {
     service = TestBed.inject(ProductsService);
   });
 
-  it('should load products', async () => {
+  afterEach(() => {
+    httpMock.verify();
+  });
+
+  it('should load products without cursor', async () => {
     const productsResponse: ProductsResponse = {
-      data: [{ id: 1, name: 'Product 1', price: 100, quantity: 1 }],
+      data: [
+        { id: 1, name: 'Product 1', price: 100, quantity: 1 },
+        { id: 2, name: 'Product 2', price: 200, quantity: 2 },
+      ],
       pagination: {
-        hasNextPage: false,
+        hasNextPage: true,
+        nextCursor: '1234567890,product-id-2',
         limit: 20,
         order: 'desc',
       },
@@ -35,10 +43,93 @@ describe('ProductsService', () => {
     const products$ = service.getProducts();
     const productsPromise = firstValueFrom(products$);
 
-    const req = httpMock.expectOne(`${environment.apiUrl}/products?order=desc`);
+    const req = httpMock.expectOne(
+      `${environment.apiUrl}/products?order=desc&limit=20`,
+    );
     expect(req.request.method).toBe('GET');
     req.flush(productsResponse);
 
-    expect(await productsPromise).toEqual(productsResponse.data);
+    const result = await productsPromise;
+    expect(result).toEqual(productsResponse);
+    expect(result.data).toEqual(productsResponse.data);
+    expect(result.pagination.hasNextPage).toBe(true);
+  });
+
+  it('should load products with cursor for pagination', async () => {
+    const cursor = '1234567890,product-id-2';
+    const productsResponse: ProductsResponse = {
+      data: [
+        { id: 3, name: 'Product 3', price: 300, quantity: 3 },
+        { id: 4, name: 'Product 4', price: 400, quantity: 4 },
+      ],
+      pagination: {
+        hasNextPage: false,
+        limit: 20,
+        order: 'desc',
+      },
+    };
+
+    const products$ = service.getProducts(cursor);
+    const productsPromise = firstValueFrom(products$);
+
+    const req = httpMock.expectOne(
+      `${environment.apiUrl}/products?order=desc&limit=20&cursor=1234567890,product-id-2`,
+    );
+    expect(req.request.method).toBe('GET');
+    req.flush(productsResponse);
+
+    const result = await productsPromise;
+    expect(result).toEqual(productsResponse);
+    expect(result.pagination.hasNextPage).toBe(false);
+  });
+
+  it('should load products with custom limit', async () => {
+    const customLimit = 10;
+    const productsResponse: ProductsResponse = {
+      data: [{ id: 1, name: 'Product 1', price: 100, quantity: 1 }],
+      pagination: {
+        hasNextPage: false,
+        limit: customLimit,
+        order: 'desc',
+      },
+    };
+
+    const products$ = service.getProducts(undefined, customLimit);
+    const productsPromise = firstValueFrom(products$);
+
+    const req = httpMock.expectOne(
+      `${environment.apiUrl}/products?order=desc&limit=${customLimit}`,
+    );
+    expect(req.request.method).toBe('GET');
+    req.flush(productsResponse);
+
+    const result = await productsPromise;
+    expect(result.pagination.limit).toBe(customLimit);
+  });
+
+  it('should load products with both cursor and custom limit', async () => {
+    const cursor = '1234567890,product-id-5';
+    const customLimit = 15;
+    const productsResponse: ProductsResponse = {
+      data: [{ id: 6, name: 'Product 6', price: 600, quantity: 6 }],
+      pagination: {
+        hasNextPage: true,
+        nextCursor: '1234567891,product-id-6',
+        limit: customLimit,
+        order: 'desc',
+      },
+    };
+
+    const products$ = service.getProducts(cursor, customLimit);
+    const productsPromise = firstValueFrom(products$);
+
+    const req = httpMock.expectOne(
+      `${environment.apiUrl}/products?order=desc&limit=${customLimit}&cursor=1234567890,product-id-5`,
+    );
+    expect(req.request.method).toBe('GET');
+    req.flush(productsResponse);
+
+    const result = await productsPromise;
+    expect(result).toEqual(productsResponse);
   });
 });

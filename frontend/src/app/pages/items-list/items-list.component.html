@@ -1,4 +1,11 @@
-<div class="items-list">
+<div
+  class="items-list"
+  infiniteScroll
+  [infiniteScrollDistance]="2"
+  [infiniteScrollThrottle]="300"
+  [infiniteScrollDisabled]="loading || !hasNextPage"
+  (scrolled)="onScrollDown()"
+>
   @if (items$ | async; as items) {
     @if (items.length > 0) {
       @for (item of items; track item.id) {
@@ -7,7 +14,13 @@
     } @else {
       <div class="no-items">No products available</div>
     }
-  } @else {
+  }
+
+  @if (loading) {
     <div class="loading">Loading products...</div>
+  }
+
+  @if (!hasNextPage && (items$ | async)?.length) {
+    <div class="end-message">No more products to load</div>
   }
 </div>
