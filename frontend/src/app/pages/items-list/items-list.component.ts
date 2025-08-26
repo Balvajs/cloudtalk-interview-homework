@@ -19,7 +19,9 @@ import { ProductsService } from './products.service';
 
 // It would be better to use some library for fetching and managing data
 // for example TanStack Query, but I wasn't sure about that specifically since it's still experimental library
-// This custom implementation is a basic approach and doesn't cover all edge cases
+// This custom implementation is a basic approach and probably doesn't cover all edge cases, but as a showcase it works.
+//
+// Also the list displays big amount of components, so it would be worth to virtualize, but didn't want to spend too much time on that.
 
 @Component({
   selector: 'app-items-list',

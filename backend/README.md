@@ -28,18 +28,36 @@ We wish you good luck and a clear mind! We are looking forward to seeing you!
 
 PS: We should be able to run application locally, thus start the backend and be able to use endpoints through the curl/postman.
 
+# Tech stack decisions
+
+- **Node.js v24** - this allows us to run TypeScript and ESM natively without transpilation and any tools, just pure Node.js
+- **Express v5** - the new Express has built in support for built in async middlewares
+  - it would be better to swap out for a more modern framework like Hono to get Typescript first approach and type safety, but Express is better known among developers and is a requirement in this project
+- **Drizzle** - a lightweight and flexible ORM for PostgreSQL with TypeScript first approach. It also supports generating migrations, which can be applied using CLI commands.
+- **Vitest** - just better testing experience with a focus on speed and simplicity (compared to Jest)
+
 ## Setup & Running
 
 ### Prerequisites
 
-- Node.js 24.5.0 (see .nvmrc)
-- PostgreSQL database
-- Docker (optional, for database setup)
+- CWD in `backend/` - all commands should run in `backend/` directory
+  ```bash
+  cd backend
+  ```
+- Node.js 24.5.0
+  ```bash
+  nvm use
+  ```
+- Docker (Docker desktop or CLI installed on your machine)
+- Install dependencies
+  ```bash
+  npm install
+  ```
 
 ### Environment Setup
 
 1. Copy `.env.example` to `.env`
-2. Set your `DATABASE_URL` in `.env` file
+2. Set your `DATABASE_URL` in `.env` file (keep the url from `.env.example` in order to be working with `npm run db:start`)
 
 ### Database Setup
 
@@ -55,19 +73,9 @@ npm run db:seed
 
 # Optional: Seed database with custom rows count
 npm run db:seed -- --count=1000
-```
 
-### Running the Application
-
-```bash
-# Install dependencies
-npm install
-
-# Development mode (with file watching)
-npm run dev
-
-# Production mode
-npm start
+# Optional: Open database viewer in browser
+npm run db:browser
 ```
 
 The API will be available at `http://localhost:3000`
@@ -81,6 +89,8 @@ The API will be available at `http://localhost:3000`
 - `POST /products` - Create a new product
 - `PUT /products/:id` - Update a product
 - `DELETE /products/:id` - Delete a product
+- `PUT /products/:id/increase-stock` - Update product quantity
+- `PUT /products/:id/decrease-stock` - Update product quantity
 
 #### Pagination Parameters
 
@@ -143,4 +153,14 @@ curl -X PUT http://localhost:3000/products/[id] \
 
 # Delete a product
 curl -X DELETE http://localhost:3000/products/[id]
+
+# Increase stock
+curl -X PUT http://localhost:3000/products/[id]/increase-stock \
+  -H "Content-Type: application/json" \
+  -d '{"amount": 5}'
+
+# Decrease stock
+curl -X PUT http://localhost:3000/products/[id]/decrease-stock \
+  -H "Content-Type: application/json" \
+  -d '{"amount": 3}'
 ```

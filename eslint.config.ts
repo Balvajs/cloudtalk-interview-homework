@@ -1,3 +1,7 @@
+/**
+ * ESLint configuration file with recommended settings from various popular plugins
+ */
+
 import eslint from '@eslint/js';
 import stylistic from '@stylistic/eslint-plugin';
 import { configs as angularConfigs } from 'angular-eslint';
