@@ -23,7 +23,21 @@ export class ProductsService {
     });
   }
 
-  deleteProduct(id: number): Observable<unknown> {
+  deleteProduct(id: string): Observable<unknown> {
     return this.http.delete(`${environment.apiUrl}/products/${id}`);
+  }
+
+  increaseStock(id: string): Observable<unknown> {
+    return this.http.put(
+      `${environment.apiUrl}/products/${id}/increase-stock`,
+      {},
+    );
+  }
+
+  decreaseStock(id: string): Observable<unknown> {
+    return this.http.put(
+      `${environment.apiUrl}/products/${id}/decrease-stock`,
+      {},
+    );
   }
 }

@@ -11,9 +11,20 @@ import { Product } from '../../../core/models/products';
 })
 export class ListItemComponent {
   @Input({ required: true }) item!: Product;
-  @Output() deleteItem = new EventEmitter<number>();
+  @Input() isLoading = false;
+  @Output() deleteItem = new EventEmitter<string>();
+  @Output() increaseStock = new EventEmitter<string>();
+  @Output() decreaseStock = new EventEmitter<string>();
 
   onDelete(): void {
     this.deleteItem.emit(this.item.id);
+  }
+
+  onIncreaseStock(): void {
+    this.increaseStock.emit(this.item.id);
+  }
+
+  onDecreaseStock(): void {
+    this.decreaseStock.emit(this.item.id);
   }
 }

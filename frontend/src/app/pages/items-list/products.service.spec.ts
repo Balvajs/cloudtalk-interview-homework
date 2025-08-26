@@ -29,8 +29,8 @@ describe('ProductsService', () => {
   it('should load products without cursor', async () => {
     const productsResponse: ProductsResponse = {
       data: [
-        { id: 1, name: 'Product 1', price: 100, quantity: 1 },
-        { id: 2, name: 'Product 2', price: 200, quantity: 2 },
+        { id: '1', name: 'Product 1', price: 100, quantity: 1 },
+        { id: '2', name: 'Product 2', price: 200, quantity: 2 },
       ],
       pagination: {
         hasNextPage: true,
@@ -59,8 +59,8 @@ describe('ProductsService', () => {
     const cursor = '1234567890,product-id-2';
     const productsResponse: ProductsResponse = {
       data: [
-        { id: 3, name: 'Product 3', price: 300, quantity: 3 },
-        { id: 4, name: 'Product 4', price: 400, quantity: 4 },
+        { id: '3', name: 'Product 3', price: 300, quantity: 3 },
+        { id: '4', name: 'Product 4', price: 400, quantity: 4 },
       ],
       pagination: {
         hasNextPage: false,
@@ -86,7 +86,7 @@ describe('ProductsService', () => {
   it('should load products with custom limit', async () => {
     const customLimit = 10;
     const productsResponse: ProductsResponse = {
-      data: [{ id: 1, name: 'Product 1', price: 100, quantity: 1 }],
+      data: [{ id: '1', name: 'Product 1', price: 100, quantity: 1 }],
       pagination: {
         hasNextPage: false,
         limit: customLimit,
@@ -111,7 +111,7 @@ describe('ProductsService', () => {
     const cursor = '1234567890,product-id-5';
     const customLimit = 15;
     const productsResponse: ProductsResponse = {
-      data: [{ id: 6, name: 'Product 6', price: 600, quantity: 6 }],
+      data: [{ id: '6', name: 'Product 6', price: 600, quantity: 6 }],
       pagination: {
         hasNextPage: true,
         nextCursor: '1234567891,product-id-6',
@@ -134,7 +134,7 @@ describe('ProductsService', () => {
   });
 
   it('should delete a product', async () => {
-    const productId = 123;
+    const productId = '123';
 
     const delete$ = service.deleteProduct(productId);
     const deletePromise = firstValueFrom(delete$);
@@ -146,6 +146,40 @@ describe('ProductsService', () => {
     req.flush({});
 
     const result = await deletePromise;
+    expect(result).toEqual({});
+  });
+
+  it('should increase stock for a product', async () => {
+    const productId = '123';
+
+    const increaseStock$ = service.increaseStock(productId);
+    const increaseStockPromise = firstValueFrom(increaseStock$);
+
+    const req = httpMock.expectOne(
+      `${environment.apiUrl}/products/${productId}/increase-stock`,
+    );
+    expect(req.request.method).toBe('PUT');
+    expect(req.request.body).toEqual({});
+    req.flush({});
+
+    const result = await increaseStockPromise;
+    expect(result).toEqual({});
+  });
+
+  it('should decrease stock for a product', async () => {
+    const productId = '456';
+
+    const decreaseStock$ = service.decreaseStock(productId);
+    const decreaseStockPromise = firstValueFrom(decreaseStock$);
+
+    const req = httpMock.expectOne(
+      `${environment.apiUrl}/products/${productId}/decrease-stock`,
+    );
+    expect(req.request.method).toBe('PUT');
+    expect(req.request.body).toEqual({});
+    req.flush({});
+
+    const result = await decreaseStockPromise;
     expect(result).toEqual({});
   });
 });

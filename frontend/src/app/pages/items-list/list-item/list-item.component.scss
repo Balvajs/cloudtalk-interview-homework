@@ -21,6 +21,10 @@
       border: 0;
       border-radius: 7px;
       padding: 10px;
+
+      &:disabled {
+        cursor: not-allowed;
+      }
     }
   }
 }

@@ -6,7 +6,7 @@ import express, { json, static as static_, urlencoded } from 'express';
 import logger from 'morgan';
 
 import { zodErrorHandler } from './middlewares/zod-error-handler.ts';
-import { productsRouter } from './routes/products.ts';
+import { productsRouter } from './routes/products/index.ts';
 
 export const app = express();
 

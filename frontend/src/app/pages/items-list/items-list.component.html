@@ -4,7 +4,10 @@
       @for (item of items; track item.id) {
         <app-list-item
           [item]="item"
+          [isLoading]="isItemLoading(item.id)"
           (deleteItem)="onDeleteItem($event)"
+          (increaseStock)="onIncreaseStock($event)"
+          (decreaseStock)="onDecreaseStock($event)"
         ></app-list-item>
       }
     } @else {

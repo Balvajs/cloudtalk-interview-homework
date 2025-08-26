@@ -8,6 +8,7 @@ import {
   OnInit,
   ViewChild,
 } from '@angular/core';
+import { replace } from 'radashi';
 import { BehaviorSubject, finalize } from 'rxjs';
 
 import { Product } from '../../core/models/products';
@@ -27,11 +28,12 @@ export class ItemsListComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('listEnd', { static: false }) listEnd!: ElementRef;
 
   items: Product[] = [];
+  loadingItems = new Set<string>();
   loading = true;
   hasNextPage = true;
   nextCursor?: string;
 
-  private itemsSubject = new BehaviorSubject<Product[]>([]);
+  itemsSubject = new BehaviorSubject<Product[]>([]);
   items$ = this.itemsSubject.asObservable();
 
   intersectionObserver?: IntersectionObserver;
@@ -104,7 +106,8 @@ export class ItemsListComponent implements OnInit, AfterViewInit, OnDestroy {
     this.loadMore();
   }
 
-  onDeleteItem(productId: number): void {
+  onDeleteItem(productId: string): void {
+    this.loadingItems.add(productId);
     this.productsService.deleteProduct(productId).subscribe({
       next: () => {
         // Remove the item from the local array
@@ -113,8 +116,60 @@ export class ItemsListComponent implements OnInit, AfterViewInit, OnDestroy {
       },
       error: (error) => {
         console.error('Error deleting product:', error);
+        this.loadingItems.delete(productId);
         // You could add a toast notification or error handling here
       },
+      complete: () => {
+        this.loadingItems.delete(productId);
+      },
     });
+  }
+
+  onIncreaseStock(productId: string): void {
+    this.loadingItems.add(productId);
+    this.productsService.increaseStock(productId).subscribe({
+      next: (data) => {
+        this.items = replace(
+          this.items,
+          data as Product,
+          (item) => item.id === productId,
+        );
+        this.itemsSubject.next(this.items);
+      },
+      error: (error) => {
+        console.error('Error increasing product stock:', error);
+        this.loadingItems.delete(productId);
+        // You could add a toast notification or error handling here
+      },
+      complete: () => {
+        this.loadingItems.delete(productId);
+      },
+    });
+  }
+
+  onDecreaseStock(productId: string): void {
+    this.loadingItems.add(productId);
+    this.productsService.decreaseStock(productId).subscribe({
+      next: (data) => {
+        this.items = replace(
+          this.items,
+          data as Product,
+          (item) => item.id === productId,
+        );
+        this.itemsSubject.next(this.items);
+      },
+      error: (error) => {
+        console.error('Error decreasing product stock:', error);
+        this.loadingItems.delete(productId);
+        // You could add a toast notification or error handling here
+      },
+      complete: () => {
+        this.loadingItems.delete(productId);
+      },
+    });
+  }
+
+  isItemLoading(itemId: string): boolean {
+    return this.loadingItems.has(itemId);
   }
 }

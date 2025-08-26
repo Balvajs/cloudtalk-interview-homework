@@ -19,8 +19,8 @@ describe('ItemsListComponent', () => {
 
   const mockProductsResponse: ProductsResponse = {
     data: [
-      { id: 1, name: 'Product 1', price: 100, quantity: 1 },
-      { id: 2, name: 'Product 2', price: 200, quantity: 2 },
+      { id: '1', name: 'Product 1', price: 100, quantity: 1 },
+      { id: '2', name: 'Product 2', price: 200, quantity: 2 },
     ],
     pagination: {
       hasNextPage: true,
@@ -32,8 +32,8 @@ describe('ItemsListComponent', () => {
 
   const mockSecondPageResponse: ProductsResponse = {
     data: [
-      { id: 3, name: 'Product 3', price: 300, quantity: 3 },
-      { id: 4, name: 'Product 4', price: 400, quantity: 4 },
+      { id: '3', name: 'Product 3', price: 300, quantity: 3 },
+      { id: '4', name: 'Product 4', price: 400, quantity: 4 },
     ],
     pagination: {
       hasNextPage: false,
@@ -311,7 +311,7 @@ describe('ItemsListComponent', () => {
     component.items = [...mockProductsResponse.data];
     fixture.detectChanges();
 
-    const productId = 1;
+    const productId = '1';
 
     component.onDeleteItem(productId);
 
@@ -327,7 +327,7 @@ describe('ItemsListComponent', () => {
     expect(
       component.items.find((item) => item.id === productId),
     ).toBeUndefined();
-    expect(component.items[0].id).toBe(2);
+    expect(component.items[0].id).toBe('2');
   });
 
   it('should handle error when deleting item', async () => {
@@ -336,7 +336,7 @@ describe('ItemsListComponent', () => {
     // Setup initial data
     component.items = [...mockProductsResponse.data];
 
-    const productId = 1;
+    const productId = '1';
     const originalItemsLength = component.items.length;
 
     component.onDeleteItem(productId);
@@ -354,5 +354,149 @@ describe('ItemsListComponent', () => {
     );
     // Items should not be removed on error
     expect(component.items.length).toBe(originalItemsLength);
+  });
+
+  it('should increase stock and update item in the list', async () => {
+    // Setup initial data
+    component.items = [...mockProductsResponse.data];
+    fixture.detectChanges();
+
+    const productId = '1';
+    const updatedProduct = {
+      id: '1',
+      name: 'Product 1',
+      price: 100,
+      quantity: 2,
+    };
+
+    component.onIncreaseStock(productId);
+
+    const increaseStockRequest = httpMock.expectOne(
+      `${environment.apiUrl}/products/${productId}/increase-stock`,
+    );
+    expect(increaseStockRequest.request.method).toBe('PUT');
+    expect(increaseStockRequest.request.body).toEqual({});
+    increaseStockRequest.flush(updatedProduct);
+
+    await fixture.whenStable();
+
+    expect(component.items.length).toBe(2);
+    const updatedItem = component.items.find((item) => item.id === productId);
+    expect(updatedItem).toEqual(updatedProduct);
+    expect(updatedItem?.quantity).toBe(2);
+    expect(component.isItemLoading(productId)).toBe(false);
+  });
+
+  it('should handle error when increasing stock', () => {
+    spyOn(console, 'error');
+
+    // Setup initial data
+    component.items = [...mockProductsResponse.data];
+    const originalQuantity = component.items[0].quantity;
+
+    const productId = '1';
+
+    component.onIncreaseStock(productId);
+
+    // Check loading state is true during operation
+    expect(component.isItemLoading(productId)).toBe(true);
+
+    const increaseStockRequest = httpMock.expectOne(
+      `${environment.apiUrl}/products/${productId}/increase-stock`,
+    );
+    increaseStockRequest.error(new ProgressEvent('Network error'));
+
+    expect(console.error).toHaveBeenCalledWith(
+      'Error increasing product stock:',
+      jasmine.any(Object),
+    );
+    // Item quantity should not change on error
+    expect(component.items[0].quantity).toBe(originalQuantity);
+    // Loading state should be cleared after error
+    expect(component.isItemLoading(productId)).toBe(false);
+  });
+
+  it('should decrease stock and update item in the list', async () => {
+    // Setup initial data
+    component.items = [...mockProductsResponse.data];
+    fixture.detectChanges();
+
+    const productId = '2';
+    const updatedProduct = {
+      id: '2',
+      name: 'Product 2',
+      price: 200,
+      quantity: 1,
+    };
+
+    component.onDecreaseStock(productId);
+
+    const decreaseStockRequest = httpMock.expectOne(
+      `${environment.apiUrl}/products/${productId}/decrease-stock`,
+    );
+    expect(decreaseStockRequest.request.method).toBe('PUT');
+    expect(decreaseStockRequest.request.body).toEqual({});
+    decreaseStockRequest.flush(updatedProduct);
+
+    await fixture.whenStable();
+
+    expect(component.items.length).toBe(2);
+    const updatedItem = component.items.find((item) => item.id === productId);
+    expect(updatedItem).toEqual(updatedProduct);
+    expect(updatedItem?.quantity).toBe(1);
+    expect(component.isItemLoading(productId)).toBe(false);
+  });
+
+  it('should handle error when decreasing stock', () => {
+    spyOn(console, 'error');
+
+    // Setup initial data
+    component.items = [...mockProductsResponse.data];
+    const originalQuantity = component.items[1].quantity;
+
+    const productId = '2';
+
+    component.onDecreaseStock(productId);
+
+    // Check loading state is true during operation
+    expect(component.isItemLoading(productId)).toBe(true);
+
+    const decreaseStockRequest = httpMock.expectOne(
+      `${environment.apiUrl}/products/${productId}/decrease-stock`,
+    );
+    decreaseStockRequest.error(new ProgressEvent('Network error'));
+
+    expect(console.error).toHaveBeenCalledWith(
+      'Error decreasing product stock:',
+      jasmine.any(Object),
+    );
+    // Item quantity should not change on error
+    expect(component.items[1].quantity).toBe(originalQuantity);
+    // Loading state should be cleared after error
+    expect(component.isItemLoading(productId)).toBe(false);
+  });
+
+  it('should set loading state for item during stock operations', () => {
+    // Setup initial data
+    component.items = [...mockProductsResponse.data];
+    const productId = '1';
+
+    expect(component.isItemLoading(productId)).toBe(false);
+
+    component.onIncreaseStock(productId);
+
+    expect(component.isItemLoading(productId)).toBe(true);
+
+    const increaseStockRequest = httpMock.expectOne(
+      `${environment.apiUrl}/products/${productId}/increase-stock`,
+    );
+    increaseStockRequest.flush({
+      id: '1',
+      name: 'Product 1',
+      price: 100,
+      quantity: 2,
+    });
+
+    expect(component.isItemLoading(productId)).toBe(false);
   });
 });

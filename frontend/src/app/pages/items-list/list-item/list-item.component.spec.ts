@@ -10,7 +10,7 @@ describe('ListItemComponent', () => {
   let fixture: ComponentFixture<ListItemComponent>;
 
   const mockItem: Product = {
-    id: 1,
+    id: '1',
     name: 'Test Item',
     quantity: 10,
     price: 29.99,
@@ -31,25 +31,34 @@ describe('ListItemComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should emit deleteItem event when delete button is clicked', () => {
+  it('should call onDelete when delete button is clicked', () => {
     spyOn(component.deleteItem, 'emit');
 
-    const deleteButton = fixture.debugElement.query(
-      By.css('.list-item--button'),
-    );
+    const deleteButton = fixture.debugElement.query(By.css('[test-delete]'));
     deleteButton.nativeElement.click();
 
     expect(component.deleteItem.emit).toHaveBeenCalledWith(mockItem.id);
   });
 
-  it('should call onDelete when delete button is clicked', () => {
-    spyOn(component, 'onDelete');
+  it('should call onIncreaseStock when increase button is clicked', () => {
+    spyOn(component.increaseStock, 'emit');
 
-    const deleteButton = fixture.debugElement.query(
-      By.css('.list-item--button'),
+    const increaseButton = fixture.debugElement.query(
+      By.css('[test-increase]'),
     );
-    deleteButton.nativeElement.click();
+    increaseButton.nativeElement.click();
 
-    expect(component.onDelete).toHaveBeenCalled();
+    expect(component.increaseStock.emit).toHaveBeenCalledWith(mockItem.id);
+  });
+
+  it('should call onDecreaseStock when decrease button is clicked', () => {
+    spyOn(component.decreaseStock, 'emit');
+
+    const decreaseButton = fixture.debugElement.query(
+      By.css('[test-decrease]'),
+    );
+    decreaseButton.nativeElement.click();
+
+    expect(component.decreaseStock.emit).toHaveBeenCalledWith(mockItem.id);
   });
 });
