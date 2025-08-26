@@ -1,4 +1,24 @@
 <div class="items-list">
+  <div class="items-list--header">
+    <h2>Products</h2>
+    @if (!showNewItemForm()) {
+      <button
+        class="items-list--add-button"
+        (click)="onShowNewItemForm()"
+        test-add-new-item
+      >
+        Add New Product
+      </button>
+    }
+  </div>
+
+  @if (showNewItemForm()) {
+    <app-new-item
+      (productCreated)="onProductCreated($event)"
+      (formClosed)="onNewItemFormClosed()"
+    ></app-new-item>
+  }
+
   @if (items$ | async; as items) {
     @if (items.length > 0) {
       @for (item of items; track item.id) {

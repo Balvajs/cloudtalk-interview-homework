@@ -3,7 +3,8 @@ import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
 import { environment } from '../../../environments/environment';
-import { ProductsResponse } from '../../core/models/products';
+
+import { Product, ProductsResponse } from './products';
 
 @Injectable({
   providedIn: 'root',
@@ -21,6 +22,10 @@ export class ProductsService {
     return this.http.get<ProductsResponse>(`${environment.apiUrl}/products`, {
       params: parameters,
     });
+  }
+
+  createProduct(product: Omit<Product, 'id'>): Observable<Product> {
+    return this.http.post<Product>(`${environment.apiUrl}/products`, product);
   }
 
   deleteProduct(id: string): Observable<unknown> {

@@ -6,19 +6,24 @@ import {
   inject,
   OnDestroy,
   OnInit,
+  signal,
   ViewChild,
 } from '@angular/core';
 import { replace } from 'radashi';
 import { BehaviorSubject, finalize } from 'rxjs';
 
-import { Product } from '../../core/models/products';
-
 import { ListItemComponent } from './list-item/list-item.component';
+import { NewItemComponent } from './new-item/new-item.component';
+import { Product } from './products';
 import { ProductsService } from './products.service';
+
+// It would be better to use some library for fetching and managing data
+// for example TanStack Query, but I wasn't sure about that specifically since it's still experimental library
+// This custom implementation is a basic approach and doesn't cover all edge cases
 
 @Component({
   selector: 'app-items-list',
-  imports: [CommonModule, ListItemComponent],
+  imports: [CommonModule, ListItemComponent, NewItemComponent],
   templateUrl: './items-list.component.html',
   styleUrls: ['./items-list.component.scss'],
 })
@@ -32,6 +37,7 @@ export class ItemsListComponent implements OnInit, AfterViewInit, OnDestroy {
   loading = true;
   hasNextPage = true;
   nextCursor?: string;
+  showNewItemForm = signal(false);
 
   itemsSubject = new BehaviorSubject<Product[]>([]);
   items$ = this.itemsSubject.asObservable();
@@ -171,5 +177,20 @@ export class ItemsListComponent implements OnInit, AfterViewInit, OnDestroy {
 
   isItemLoading(itemId: string): boolean {
     return this.loadingItems.has(itemId);
+  }
+
+  onShowNewItemForm(): void {
+    this.showNewItemForm.set(true);
+  }
+
+  onNewItemFormClosed(): void {
+    this.showNewItemForm.set(false);
+  }
+
+  onProductCreated(product: Product): void {
+    // Add the new product to the beginning of the list
+    this.items = [product, ...this.items];
+    this.itemsSubject.next(this.items);
+    this.showNewItemForm.set(false);
   }
 }

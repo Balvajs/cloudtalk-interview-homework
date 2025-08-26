@@ -5,7 +5,7 @@ import {
 } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { firstValueFrom } from 'rxjs';
-import { ProductsResponse } from 'src/app/core/models/products';
+import { ProductsResponse } from 'src/app/pages/items-list/products';
 import { environment } from 'src/environments/environment';
 
 import { ProductsService } from './products.service';

@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
-import { Product } from '../../../core/models/products';
+import { Product } from '../products';
 
 @Component({
   selector: 'app-list-item',

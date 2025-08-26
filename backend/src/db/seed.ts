@@ -15,6 +15,8 @@ export const seedDatabase = ({
       columns: {
         quantity: funcs.int({ minValue: 0 }),
         price: funcs.number({ minValue: 0, precision: 2 }),
+        createdAt: funcs.date({ maxDate: new Date() }),
+        updatedAt: funcs.date({ maxDate: new Date() }),
       },
     },
   }));

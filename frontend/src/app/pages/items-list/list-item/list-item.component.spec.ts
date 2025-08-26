@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 
-import { Product } from '../../../core/models/products';
+import { Product } from '../products';
 
 import { ListItemComponent } from './list-item.component';
 

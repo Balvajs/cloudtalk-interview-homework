@@ -5,7 +5,7 @@ import {
 } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { ProductsResponse } from 'src/app/core/models/products';
+import { Product, ProductsResponse } from 'src/app/pages/items-list/products';
 import { environment } from 'src/environments/environment';
 
 import { ItemsListComponent } from './items-list.component';
@@ -498,5 +498,78 @@ describe('ItemsListComponent', () => {
     });
 
     expect(component.isItemLoading(productId)).toBe(false);
+  });
+
+  describe('New Item Form', () => {
+    beforeEach(() => {
+      // Setup initial data to prevent HTTP calls in these specific tests
+      component.items = [...mockProductsResponse.data];
+      component.itemsSubject.next(component.items);
+      component.loading = false;
+      fixture.detectChanges();
+
+      // Flush the initial HTTP request that happens in ngOnInit
+      const initialRequest = httpMock.expectOne((req) =>
+        req.url.includes('/products'),
+      );
+      initialRequest.flush(mockProductsResponse);
+      fixture.detectChanges();
+    });
+
+    it('should show add button by default', () => {
+      const addButton = fixture.debugElement.query(
+        By.css('[test-add-new-item]'),
+      );
+      expect(addButton).toBeTruthy();
+      expect(component.showNewItemForm()).toBeFalsy();
+    });
+
+    it('should show new item form when add button is clicked', () => {
+      const addButton = fixture.debugElement.query(
+        By.css('[test-add-new-item]'),
+      );
+      expect(addButton).toBeTruthy();
+
+      addButton.nativeElement.click();
+      fixture.detectChanges();
+
+      expect(component.showNewItemForm()).toBeTruthy();
+      const newItemForm = fixture.debugElement.query(By.css('app-new-item'));
+      expect(newItemForm).toBeTruthy();
+    });
+
+    it('should hide add button when form is shown', () => {
+      component.onShowNewItemForm();
+      fixture.detectChanges();
+
+      const addButton = fixture.debugElement.query(
+        By.css('[test-add-new-item]'),
+      );
+      expect(addButton).toBeFalsy();
+    });
+
+    it('should close form when onNewItemFormClosed is called', () => {
+      component.onShowNewItemForm();
+      expect(component.showNewItemForm()).toBeTruthy();
+
+      component.onNewItemFormClosed();
+      expect(component.showNewItemForm()).toBeFalsy();
+    });
+
+    it('should add new product to the beginning of the list when created', () => {
+      const newProduct: Product = {
+        id: 'new-id',
+        name: 'New Product',
+        quantity: 5,
+        price: 50,
+      };
+
+      const initialLength = component.items.length;
+      component.onProductCreated(newProduct);
+
+      expect(component.items.length).toBe(initialLength + 1);
+      expect(component.items[0]).toEqual(newProduct);
+      expect(component.showNewItemForm()).toBeFalsy();
+    });
   });
 });
